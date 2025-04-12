@@ -240,9 +240,26 @@
                 height: 50%;
             }
         }
+        .compile-status {
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .compile-success {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--secondary-color);
+        }
+        
+        .compile-error {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
+    
     <div class="editor-container">
         <div class="editor-header">
             <h1 class="editor-title">在线编辑器</h1>
@@ -298,7 +315,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- 加载Pyodide库 -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
     <script>
@@ -342,6 +359,7 @@
                 }
             });
         }
+        
         
         // 编辑器功能
         const editor = document.getElementById('editor');
@@ -397,6 +415,53 @@
                 }
             }
         }
+        
+        
+        // 修改运行按钮事件处理
+        runBtn.addEventListener('click', async () => {
+            if (!['python', 'html', 'c'].includes(currentLanguage)) return;
+            
+            previewContainer.style.display = 'block';
+            previewContent.innerHTML = '';
+            
+            if (currentLanguage === 'html') {
+                // 运行HTML代码
+                const htmlContent = editor.value;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                previewContent.innerHTML = `
+                    <iframe 
+                        src="${url}" 
+                        style="width:100%; height:100%; border:none;"
+                        sandbox="allow-scripts allow-same-origin"
+                    ></iframe>
+                `;
+                statusMessage.textContent = 'HTML正在运行';
+            } 
+            else if (currentLanguage === 'python') {
+                // 运行Python代码
+                statusMessage.textContent = '正在执行Python代码...';
+                
+                try {
+                    if (!isPyodideLoaded) {
+                        await initializePyodide();
+                    }
+                    
+                    await pyodide.runPythonAsync(editor.value);
+                    statusMessage.textContent = 'Python代码执行完成';
+                } catch (error) {
+                    previewContent.innerHTML = `执行错误: ${error}`;
+                    statusMessage.textContent = 'Python代码执行出错';
+                }
+            }
+            else if (currentLanguage === 'c') {
+                // 运行C代码
+                statusMessage.textContent = '正在编译C代码...';
+                await compileAndRunCCode(editor.value);
+            }
+        });
+
         
         // 根据语言设置初始内容
         const languageTemplates = {
@@ -706,7 +771,7 @@ int main() {
             if (isModified && !confirm('您有未保存的更改，确定要离开吗？')) {
                 return;
             }
-            window.location.href = 'https://mo-ming4.github.io/index.html';
+            window.location.href = 'index.html';
         });
 
         // 监听Tab键实现缩进
