@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级代码编辑器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --icon-color: #333;
+            --btn-text-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #8ab4f8;
+            --secondary-color: #81c995;
+            --accent-color: #f28b82;
+            --text-color: #e8eaed;
+            --bg-color: #202124;
+            --card-bg: #303134;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --icon-color: #fff;
+            --btn-text-color: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .editor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .language-selector {
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            border: 1px solid #ddd;
+            color: var(--text-color);
+        }
+
+        .editor-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .code-editor {
+            flex-grow: 1;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-toolbar {
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            color: var(--btn-text-color);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--card-bg);
+            border: 1px solid #ddd;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        #editor {
+            flex-grow: 1;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--card-bg);
+            border: none;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+        }
+
+        .status-bar {
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--icon-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .preview-container {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            display: none;
+            position: relative;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .editor-preview {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            gap: 10px;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .close-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .btn-icon {
+            color: var(--icon-color);
+        }
+
+        .btn-primary .btn-icon,
+        .btn-danger .btn-icon {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .editor-preview {
+                flex-direction: column;
+            }
+            
+            .editor-wrapper, .preview-container {
+                width: 100%;
+                height: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <div class="editor-header">
+            <h1 class="editor-title">高级代码编辑器</h1>
+            <select class="language-selector" id="language-selector">
+                <option value="python">Python</option>
+                <option value="c">C</option>
+                <option value="html">HTML</option>
+            </select>
+        </div>
+        
+        <div class="code-editor">
+            <div class="editor-toolbar">
+                <div>
+                    <i class="fas fa-file-code"></i>
+                    <span id="filename-display">untitled.py</span>
+                </div>
+                <div class="editor-actions">
+                    <button class="btn btn-secondary" id="import-btn">
+                        <i class="fas fa-file-import btn-icon"></i> 导入
+                    </button>
+                    <button class="btn btn-primary" id="save-btn">
+                        <i class="fas fa-save btn-icon"></i> 保存
+                    </button>
+                    <button class="btn btn-danger" id="cancel-btn">
+                        <i class="fas fa-times btn-icon"></i> 返回
+                    </button>
+                    <button class="btn btn-secondary" id="run-btn" style="display: none;">
+                        <i class="fas fa-play btn-icon"></i> 运行
+                    </button>
+                </div>
+            </div>
+            
+            <div class="editor-preview">
+                <div class="editor-wrapper">
+                    <textarea id="editor" spellcheck="false"></textarea>
+                </div>
+                <div class="preview-container" id="preview-container">
+                    <button class="close-preview" id="close-preview-btn" title="退出预览">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <iframe class="preview-iframe" id="preview-iframe"></iframe>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <span id="status-message">就绪</span>
+                <button class="theme-toggle" title="切换主题" id="theme-toggle-btn">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 主题切换功能
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const themeIcon = themeToggleBtn.querySelector('i');
+        const html = document.documentElement;
+        
+        // 检查本地存储中的主题偏好
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+        
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+            
+            // 更新所有按钮图标的颜色
+            document.querySelectorAll('.btn-icon').forEach(icon => {
+                icon.style.color = theme === 'dark' ? '#fff' : '#333';
+            });
+            
+            // 更新按钮文字颜色
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (!btn.classList.contains('btn-primary') && !btn.classList.contains('btn-danger')) {
+                    btn.style.color = theme === 'dark' ? '#fff' : '#333';
+                }
+            });
+        }
+        
+        // 编辑器功能
+        const editor = document.getElementById('editor');
+        const languageSelector = document.getElementById('language-selector');
+        const filenameDisplay = document.getElementById('filename-display');
+        const saveBtn = document.getElementById('save-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const importBtn = document.getElementById('import-btn');
+        const runBtn = document.getElementById('run-btn');
+        const closePreviewBtn = document.getElementById('close-preview-btn');
+        const statusMessage = document.getElementById('status-message');
+        const previewContainer = document.getElementById('preview-container');
+        const previewIframe = document.getElementById('preview-iframe');
+        
+        // 根据语言设置初始内容
+        const languageTemplates = {
+            python: `# Python示例代码
+def greet(name):
+    """这是一个简单的问候函数"""
+    print(f"Hello, {name}!")
+
+if __name__ == "__main__":
+    greet("World")
+`,
+            c: `// C示例代码
+#include <stdio.h>
+
+int main() {
+    printf("Hello, World!\\n");
+    return 0;
+}
+`,
+            html: `<!-- HTML示例代码 -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的网页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #4285f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎来到我的网站</h1>
+    <p>这是一个段落。</p>
+    <button onclick="alert('你好！')">点击我</button>
+</body>
+</html>
+`
+        };
+        
+        // 设置初始语言
+        let currentLanguage = 'python';
+        let currentFileHandle = null;
+        let isModified = false;
+        
+        // 初始化编辑器
+        function initEditor() {
+            editor.value = languageTemplates[currentLanguage];
+            updateFilename();
+            updateRunButton();
+        }
+        
+        // 更新文件名显示
+        function updateFilename() {
+            let extension;
+            switch(currentLanguage) {
+                case 'python': extension = 'py'; break;
+                case 'c': extension = 'c'; break;
+                case 'html': extension = 'html'; break;
+                default: extension = 'txt';
+            }
+            filenameDisplay.textContent = `untitled.${extension}`;
+        }
+        
+        // 更新运行按钮显示
+        function updateRunButton() {
+            runBtn.style.display = currentLanguage === 'html' ? 'flex' : 'none';
+        }
+        
+        // 语言切换事件
+        languageSelector.addEventListener('change', (e) => {
+            if (isModified && !confirm('切换语言将重置编辑器内容，确定要继续吗？')) {
+                languageSelector.value = currentLanguage;
+                return;
+            }
+            
+            currentLanguage = e.target.value;
+            initEditor();
+            isModified = false;
+            statusMessage.textContent = '就绪';
+        });
+        
+        // 编辑器内容变化事件
+        editor.addEventListener('input', () => {
+            if (!isModified) {
+                isModified = true;
+                statusMessage.textContent = '已修改';
+            }
+        });
+        
+        // 保存功能
+        saveBtn.addEventListener('click', async () => {
+            try {
+                // 使用File System Access API保存文件
+                if ('showSaveFilePicker' in window) {
+                    const options = {
+                        suggestedName: filenameDisplay.textContent,
+                        types: [
+                            {
+                                description: '代码文件',
+                                accept: {
+                                    'text/plain': ['.py', '.c', '.html']
+                                }
+                            }
+                        ]
+                    };
+                    
+                    try {
+                        const handle = await window.showSaveFilePicker(options);
+                        const writable = await handle.createWritable();
+                        await writable.write(editor.value);
+                        await writable.close();
+                        
+                        currentFileHandle = handle;
+                        isModified = false;
+                        statusMessage.textContent = `文件 ${handle.name} 已保存`;
+                        
+                        // 更新文件名显示
+                        filenameDisplay.textContent = handle.name;
+                        
+                        // 根据文件扩展名更新语言选择
+                        const ext = handle.name.split('.').pop().toLowerCase();
+                        if (ext === 'py') {
+                            languageSelector.value = 'python';
+                            currentLanguage = 'python';
+                        } else if (ext === 'c') {
+                            languageSelector.value = 'c';
+                            currentLanguage = 'c';
+                        } else if (ext === 'html') {
+                            languageSelector.value = 'html';
+                            currentLanguage = 'html';
+                        }
+                        updateRunButton();
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.error('保存文件出错:', err);
+                            statusMessage.textContent = '保存失败';
+                        }
+                        return;
+                    }
+                } else {
+                    // 回退方案：使用下载方式保存
+                    const blob = new Blob([editor.value], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filenameDisplay.textContent;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    isModified = false;
+                    statusMessage.textContent = `文件 ${filenameDisplay.textContent} 已下载`;
+                }
+            } catch (err) {
+                console.error('保存出错:', err);
+                statusMessage.textContent = '保存出错';
+            }
+        });
+        
+        // 导入功能
+        importBtn.addEventListener('click', async () => {
+            if (isModified && !confirm('当前内容未保存，确定要导入新文件吗？')) {
+                return;
+            }
+            
+            try {
+                // 使用File System Access API打开文件
+                if ('showOpenFilePicker' in window) {
+                    const [fileHandle] = await window.showOpenFilePicker({
+                        types: [
+                            {
+                                description: '代码文件',
+                                accept: {
+                                    'text/plain': ['.py', '.c', '.html']
+                                }
+                            }
+                        ],
+                        multiple: false
+                    });
+                    
+                    const file = await fileHandle.getFile();
+                    const content = await file.text();
+                    
+                    // 根据文件扩展名设置语言
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (ext === 'py') {
+                        languageSelector.value = 'python';
+                        currentLanguage = 'python';
+                    } else if (ext === 'c') {
+                        languageSelector.value = 'c';
+                        currentLanguage = 'c';
+                    } else if (ext === 'html') {
+                        languageSelector.value = 'html';
+                        currentLanguage = 'html';
+                    }
+                    
+                    editor.value = content;
+                    filenameDisplay.textContent = file.name;
+                    currentFileHandle = fileHandle;
+                    isModified = false;
+                    statusMessage.textContent = `已导入 ${file.name}`;
+                    updateRunButton();
+                } else {
+                    // 回退方案：使用传统文件输入
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.py,.c,.html';
+                    
+                    input.onchange = e => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            const content = event.target.result;
+                            
+                            // 根据文件扩展名设置语言
+                            const ext = file.name.split('.').pop().toLowerCase();
+                            if (ext === 'py') {
+                                languageSelector.value = 'python';
+                                currentLanguage = 'python';
+                            } else if (ext === 'c') {
+                                languageSelector.value = 'c';
+                                currentLanguage = 'c';
+                            } else if (ext === 'html') {
+                                languageSelector.value = 'html';
+                                currentLanguage = 'html';
+                            }
+                            
+                            editor.value = content;
+                            filenameDisplay.textContent = file.name;
+                            isModified = false;
+                            statusMessage.textContent = `已导入 ${file.name}`;
+                            updateRunButton();
+                        };
+                        reader.readAsText(file);
+                    };
+                    
+                    input.click();
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('导入文件出错:', err);
+                    statusMessage.textContent = '导入失败';
+                }
+            }
+        });
+        
+        // 运行HTML功能
+        runBtn.addEventListener('click', () => {
+            if (currentLanguage !== 'html') return;
+            
+            const htmlContent = editor.value;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            previewIframe.src = url;
+            previewContainer.style.display = 'block';
+            
+            statusMessage.textContent = 'HTML正在运行';
+        });
+        
+        // 关闭预览功能
+        closePreviewBtn.addEventListener('click', () => {
+            previewContainer.style.display = 'none';
+            statusMessage.textContent = isModified ? '已修改' : '就绪';
+        });
+        
+        // 返回功能 - 返回到指定网址
+        cancelBtn.addEventListener('click', () => {
+            if (isModified && !confirm('您有未保存的更改，确定要离开吗？')) {
+                return;
+            }
+            window.location.href = 'https://mo-ming4.github.io/index.html';
+        });
+        
+        // 监听Tab键实现缩进
+        editor.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                
+                // 插入4个空格
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                
+                // 移动光标位置
+                this.selectionStart = this.selectionEnd = start + 4;
+                
+                // 触发input事件
+                const event = new Event('input', { bubbles: true });
+                this.dispatchEvent(event);
+            }
+        });
+        
+        // 初始化编辑器
+        initEditor();
+        
+        // 初始按钮颜色设置
+        updateThemeIcon(currentTheme);
+    </script>
+</body>
+</html>
