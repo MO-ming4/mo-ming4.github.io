@@ -169,12 +169,15 @@
             overflow: hidden;
             display: none;
             position: relative;
+            background-color: var(--card-bg);
         }
 
-        .preview-iframe {
-            width: 100%;
+        .preview-content {
+            padding: 15px;
             height: 100%;
-            border: none;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
         }
 
         .editor-preview {
@@ -217,6 +220,16 @@
             color: white;
         }
 
+        .loading-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
         @media (max-width: 768px) {
             .editor-preview {
                 flex-direction: column;
@@ -232,7 +245,7 @@
 <body>
     <div class="editor-container">
         <div class="editor-header">
-            <h1 class="editor-title">高级代码编辑器</h1>
+            <h1 class="editor-title">在线编辑器</h1>
             <select class="language-selector" id="language-selector">
                 <option value="python">Python</option>
                 <option value="c">C</option>
@@ -256,7 +269,7 @@
                     <button class="btn btn-danger" id="cancel-btn">
                         <i class="fas fa-times btn-icon"></i> 返回
                     </button>
-                    <button class="btn btn-secondary" id="run-btn" style="display: none;">
+                    <button class="btn btn-secondary" id="run-btn">
                         <i class="fas fa-play btn-icon"></i> 运行
                     </button>
                 </div>
@@ -270,7 +283,10 @@
                     <button class="close-preview" id="close-preview-btn" title="退出预览">
                         <i class="fas fa-times"></i>
                     </button>
-                    <iframe class="preview-iframe" id="preview-iframe"></iframe>
+                    <div class="loading-indicator" id="loading-indicator">
+                        <i class="fas fa-spinner fa-spin"></i> 正在加载Python环境...
+                    </div>
+                    <div class="preview-content" id="preview-content"></div>
                 </div>
             </div>
             
@@ -283,6 +299,8 @@
         </div>
     </div>
 
+    <!-- 加载Pyodide库 -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
     <script>
         // 主题切换功能
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -336,7 +354,49 @@
         const closePreviewBtn = document.getElementById('close-preview-btn');
         const statusMessage = document.getElementById('status-message');
         const previewContainer = document.getElementById('preview-container');
-        const previewIframe = document.getElementById('preview-iframe');
+        const previewContent = document.getElementById('preview-content');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        
+        let pyodide = null;
+        let isPyodideLoaded = false;
+        
+        // 初始化Pyodide
+        async function initializePyodide() {
+            if (!isPyodideLoaded && currentLanguage === 'python') {
+                loadingIndicator.style.display = 'block';
+                previewContent.innerHTML = '';
+                
+                try {
+                    pyodide = await loadPyodide({
+                        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
+                    });
+                    
+                    // 添加console.log的Python重定向
+                    pyodide.runPython(`
+                        import sys
+                        import js
+                        
+                        class OutputCapture:
+                            def write(self, text):
+                                js.document.getElementById("preview-content").innerHTML += text
+                                
+                            def flush(self):
+                                pass
+                                
+                        sys.stdout = OutputCapture()
+                        sys.stderr = OutputCapture()
+                    `);
+                    
+                    isPyodideLoaded = true;
+                    statusMessage.textContent = 'Python环境已加载';
+                } catch (error) {
+                    console.error('加载Pyodide失败:', error);
+                    previewContent.innerHTML = '加载Python环境失败，请刷新页面重试';
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            }
+        }
         
         // 根据语言设置初始内容
         const languageTemplates = {
@@ -408,7 +468,7 @@ int main() {
         
         // 更新运行按钮显示
         function updateRunButton() {
-            runBtn.style.display = currentLanguage === 'html' ? 'flex' : 'none';
+            runBtn.style.display = ['python', 'html'].includes(currentLanguage) ? 'flex' : 'none';
         }
         
         // 语言切换事件
@@ -523,7 +583,6 @@ int main() {
                         ],
                         multiple: false
                     });
-                    
                     const file = await fileHandle.getFile();
                     const content = await file.text();
                     
@@ -591,27 +650,57 @@ int main() {
                 }
             }
         });
-        
-        // 运行HTML功能
-        runBtn.addEventListener('click', () => {
-            if (currentLanguage !== 'html') return;
+
+        // 运行代码功能
+        runBtn.addEventListener('click', async () => {
+            if (!['python', 'html'].includes(currentLanguage)) return;
             
-            const htmlContent = editor.value;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            
-            previewIframe.src = url;
             previewContainer.style.display = 'block';
+            previewContent.innerHTML = '';
             
-            statusMessage.textContent = 'HTML正在运行';
+            if (currentLanguage === 'html') {
+                // 运行HTML代码
+                const htmlContent = editor.value;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                // 创建iframe预览
+                previewContent.innerHTML = `
+                    <iframe 
+                        src="${url}" 
+                        style="width:100%; height:100%; border:none;"
+                        sandbox="allow-scripts allow-same-origin"
+                    ></iframe>
+                `;
+                statusMessage.textContent = 'HTML正在运行';
+            } else if (currentLanguage === 'python') {
+                // 运行Python代码
+                statusMessage.textContent = '正在执行Python代码...';
+                
+                try {
+                    if (!isPyodideLoaded) {
+                        await initializePyodide();
+                    }
+                    
+                    // 清空之前的结果
+                    previewContent.innerHTML = '';
+                    
+                    // 执行Python代码
+                    await pyodide.runPythonAsync(editor.value);
+                    statusMessage.textContent = 'Python代码执行完成';
+                } catch (error) {
+                    previewContent.innerHTML = `执行错误: ${error}`;
+                    statusMessage.textContent = 'Python代码执行出错';
+                }
+            }
         });
-        
+
         // 关闭预览功能
         closePreviewBtn.addEventListener('click', () => {
             previewContainer.style.display = 'none';
             statusMessage.textContent = isModified ? '已修改' : '就绪';
         });
-        
+
         // 返回功能 - 返回到指定网址
         cancelBtn.addEventListener('click', () => {
             if (isModified && !confirm('您有未保存的更改，确定要离开吗？')) {
@@ -619,7 +708,7 @@ int main() {
             }
             window.location.href = 'https://mo-ming4.github.io/index.html';
         });
-        
+
         // 监听Tab键实现缩进
         editor.addEventListener('keydown', function(e) {
             if (e.key === 'Tab') {
@@ -638,7 +727,7 @@ int main() {
                 this.dispatchEvent(event);
             }
         });
-        
+
         // 初始化编辑器
         initEditor();
         
