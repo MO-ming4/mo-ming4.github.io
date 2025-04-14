@@ -471,13 +471,159 @@
             font-size: 48px;
             font-weight: bold;
             margin: 20px 0;
-            color: #4CAF50;
+            color: #2196F3;
         }
         
         .luck-comment {
             font-size: 18px;
             color: #666;
             margin-bottom: 20px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 游戏区域样式 */
+        .game-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        /* 手速测试区域 */
+        #speedTestArea {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        /* 顺序点击按钮 */
+        .click-btn {
+            padding: 12px;
+            margin: 5px;
+            min-width: 45px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .click-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .click-btn.correct {
+            background-color: #2196F3;
+            color: white;
+            transform: scale(0.95);
+        }
+        
+        .click-btn.wrong {
+            background-color: #FF5252;
+            color: white;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        /* 统计信息 */
+        .stats {
+            margin-top: 15px;
+            font-size: 18px;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+        
+        .stats span {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        /* 响应式布局 */
+        @media (max-width: 600px) {
+            .click-btn {
+                padding: 8px;
+                min-width: 35px;
+                font-size: 14px;
+            }
+        }
+                
+        .btn:hover {
+            background-color: #2196F3;
+            transform: translateY(-2px);
+        }
+        
+        .test-area {
+            height: 300px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            user-select: none;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .results-table th {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .test-area {
+                height: 250px;
+            }
         }
         
         /* button {
@@ -502,7 +648,7 @@
         
         <nav>
             <ul>
-                <li><a href="#" class="active">首页</a></li>
+                <li><a href="index.html" class="active">首页</a></li>
                 <li><a href="about.html">关于</a></li>
                 <li><a href="wendang.html">文档</a></li>
                 <li><a href="#">社区</a></li>
@@ -524,15 +670,6 @@
 
     <!-- 主要内容 -->
     <main>
-        <section class="hero">
-            <h1>欢迎来到 MO-ming Wiki</h1>
-            <p>这里是知识共享与协作的平台，探索无限可能，共同构建知识库。</p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary pulse" onclick="window.location.href='wendang.html'">开启wiki</button>
-                <button class="btn btn-outline" onclick="window.location.href='webmc.html'">启动在线MC</button>
-                <button class="btn btn-outline" onclick="window.location.href='mod.html'">小功能</button>
-            </div>
-        </section>
         <section>
             <div class="card">
                 <h2><span style="color:#ea4335">网站维护！</span></h2>
@@ -540,9 +677,96 @@
                 <p>网站正在维护中，<span style="color:#ea4335">部分功能无法使用<span></p>
             </div>
             <div class="card">
-                <h2>关于 MO-ming Wiki</h2>
-                <p>MO-ming Wiki是一个小型wiki，用于查询我的世界指令和一些技巧等</p>
+                <center>
+                    <h2>今日人品</h2>
+                    <div class="luck-value" id="luckValue">--</div>
+                    <div class="luck-comment" id="luckComment">--</div>
+                    <button class="btn btn-primary pulse" onclick="checkLuck()">查看我的人品</button>
+                </center>
             </div>
+            <div class="card">
+                <center>
+                    <h2>随机一言</h2>
+                    <span style="color: #4285f4;"></span><p id="hitokoto">加载中...</p></span>
+                    <p id="form" class="author"></p>
+                    <p id="creator" class="creator"></p>
+                    <button class="btn btn-primary pulse" onclick="getHitokoto()">换一句</button>
+                <center>
+            </div>
+                <center>            <!-- 手速测试 -->
+                    <div class="card">
+                        <h2>手速测试</h2>
+                        <p>点击开始按钮后，快速点击下方区域测试您的手速</p>
+                        <button id="speedTestStart" class="btn btn-primary pulse">开始测试</button>
+                        <div id="speedTestArea" class="game-area" style="display: none;">
+                            请快速点击此区域！
+                        </div>
+                        <div id="speedTestStats" class="stats">
+                            点击次数: <span id="clickCount">0</span><br>
+                            平均速度: <span id="clickSpeed">0</span> 次/秒<br>
+                            测试剩余时间: <span id="timeLeft">10</span> 秒
+                        </div>
+                    </div>
+                </center>
+                <!-- 顺序点击游戏 -->
+                <div class="card">
+                    <center>
+                        <h2>顺序点击</h2>
+                        <p>选择模式后点击开始，按顺序点击所有按钮</p>
+                        <div>
+                            <label>选择模式: </label>
+                            <select id="gameMode">
+                                <option value="numbers">数字1-10</option>
+                                <option value="letters">字母A-Z</option>
+                            </select>
+                            <button id="startGame" class="btn btn-primary pulse">开始测试</button>
+                        </div>
+                        <div id="sequenceGameArea" class="game-area" style="display: none;">
+                            <p>请按顺序点击: <span id="currentTarget">1</span></p>
+                            <div id="buttonsContainer"></div>
+                        </div>
+                        <div id="gameStats" class="stats">
+                            进度: <span id="gameProgress">0/0</span><br>
+                            用时: <span id="gameTime">0</span> 秒
+                        </div>
+                    </center>
+                </div>
+                <div class="card">
+                    <center><h2>反应力测试</h2>
+                    <p>点击开始按钮后，观察中间方框的颜色变化（红→黄→绿）</p>
+                    <p>当变成绿色时，<strong>立即点击</strong>方框</p>
+                    <button id="startTest" class="btn btn-primary pulse">开始测试</button></center>
+                    
+                    <div class="test-area" id="testArea">
+                        准备开始
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span>测试次数:</span>
+                            <span id="testCount" class="stat-value">0/5</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>平均反应时间:</span>
+                            <span id="avgReaction" class="stat-value">0 ms</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>最快反应时间:</span>
+                            <span id="bestReaction" class="stat-value">0 ms</span>
+                        </div>
+                    </div>
+                    
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>次数</th>
+                                <th>反应时间</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
         </section>
     </main>
 
@@ -885,6 +1109,308 @@
         cards.forEach(card => {
             observer.observe(card);
         });
+                // 手速测试功能
+                document.getElementById('speedTestStart').addEventListener('click', startSpeedTest);
+        
+        function startSpeedTest() {
+            const testArea = document.getElementById('speedTestArea');
+            const startBtn = document.getElementById('speedTestStart');
+            
+            testArea.style.display = 'block';
+            startBtn.style.display = 'none';
+            
+            let clickCount = 0;
+            let startTime = null;
+            let lastClickTime = null;
+            let clickIntervals = [];
+            let timeLeft = 10;
+            let countdown;
+            
+            // 更新显示
+            document.getElementById('clickCount').textContent = '0';
+            document.getElementById('clickSpeed').textContent = '0';
+            document.getElementById('timeLeft').textContent = timeLeft;
+            
+            // 设置倒计时
+            countdown = setInterval(function() {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    endSpeedTest();
+                }
+            }, 1000);
+            
+            // 点击处理函数
+            function handleClick() {
+                if (!startTime) {
+                    startTime = Date.now();
+                }
+                
+                clickCount++;
+                document.getElementById('clickCount').textContent = clickCount;
+                
+                // 计算点击间隔
+                const now = Date.now();
+                if (lastClickTime) {
+                    clickIntervals.push(now - lastClickTime);
+                }
+                lastClickTime = now;
+                
+                // 计算平均速度
+                if (clickIntervals.length > 0) {
+                    const avgInterval = clickIntervals.reduce((a, b) => a + b, 0) / clickIntervals.length;
+                    const clicksPerSecond = 1000 / avgInterval;
+                    document.getElementById('clickSpeed').textContent = clicksPerSecond.toFixed(2);
+                }
+            }
+            
+            // 结束测试
+            function endSpeedTest() {
+                testArea.removeEventListener('click', handleClick);
+                clearInterval(countdown);
+                
+                let resultMessage = '测试结束！';
+                if (clickIntervals.length > 0) {
+                    const avgSpeed = (1000 / (clickIntervals.reduce((a, b) => a + b, 0) / clickIntervals.length)).toFixed(2);
+                    resultMessage += ` 您的平均手速是: ${avgSpeed} 次/秒`;
+                } else {
+                    resultMessage += ' 您没有点击任何次数';
+                }
+                
+                alert(resultMessage);
+                startBtn.style.display = 'inline-block';
+                testArea.style.display = 'none';
+            }
+            
+            // 绑定点击事件
+            testArea.addEventListener('click', handleClick);
+            
+            // 10秒后自动结束
+            setTimeout(endSpeedTest, 10000);
+        }
+
+        // 顺序点击游戏功能
+        document.getElementById('startGame').addEventListener('click', startSequenceGame);
+        
+        function startSequenceGame() {
+            const mode = document.getElementById('gameMode').value;
+            const gameArea = document.getElementById('sequenceGameArea');
+            const buttonsContainer = document.getElementById('buttonsContainer');
+            const currentTarget = document.getElementById('currentTarget');
+            
+            gameArea.style.display = 'block';
+            buttonsContainer.innerHTML = '';
+            
+            // 根据模式创建项目数组
+            let items = [];
+            if (mode === 'numbers') {
+                items = Array.from({length: 10}, (_, i) => i + 1);
+            } else {
+                items = Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i));
+            }
+            
+            // 随机排序
+            const shuffledItems = [...items].sort(() => Math.random() - 0.5);
+            
+            // 创建按钮
+            shuffledItems.forEach(item => {
+                const button = document.createElement('button');
+                button.className = 'click-btn';
+                button.textContent = item;
+                button.dataset.value = item;
+                buttonsContainer.appendChild(button);
+            });
+            
+            let currentIndex = 0;
+            let startTime = Date.now();
+            let timer = setInterval(updateTimer, 1000);
+            
+            // 更新当前目标
+            currentTarget.textContent = items[currentIndex];
+            document.getElementById('gameProgress').textContent = `0/${items.length}`;
+            document.getElementById('gameTime').textContent = '0';
+            
+            // 更新计时器
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('gameTime').textContent = elapsed;
+            }
+            
+            // 处理按钮点击
+            function handleButtonClick(e) {
+                if (e.target.classList.contains('click-btn')) {
+                    const clickedValue = e.target.dataset.value;
+                    const expectedValue = items[currentIndex].toString();
+                    
+                    if (clickedValue === expectedValue) {
+                        // 正确点击
+                        e.target.classList.add('correct');
+                        e.target.disabled = true;
+                        currentIndex++;
+                        
+                        // 更新当前目标
+                        currentTarget.textContent = items[currentIndex] || '完成!';
+                        
+                        // 更新进度
+                        document.getElementById('gameProgress').textContent = `${currentIndex}/${items.length}`;
+                        
+                        // 检查是否完成
+                        if (currentIndex >= items.length) {
+                            clearInterval(timer);
+                            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                            setTimeout(() => {
+                                alert(`恭喜完成! 用时: ${elapsed}秒`);
+                            }, 300);
+                        }
+                    } else {
+                        // 错误点击
+                        e.target.classList.add('wrong');
+                        setTimeout(() => {
+                            e.target.classList.remove('wrong');
+                        }, 500);
+                    }
+                }
+            }
+            
+            // 绑定点击事件
+            buttonsContainer.addEventListener('click', handleButtonClick);
+        }
+        const startBtn = document.getElementById('startTest');
+        const testArea = document.getElementById('testArea');
+        const testCountEl = document.getElementById('testCount');
+        const avgReactionEl = document.getElementById('avgReaction');
+        const bestReactionEl = document.getElementById('bestReaction');
+        const resultsTable = document.getElementById('resultsTable');
+        const resultsBody = document.getElementById('resultsBody');
+        
+        let testCount = 0;
+        const totalTests = 5;
+        let reactionTimes = [];
+        let startTime;
+        let isTesting = false;
+        let colorChangeTimeout;
+        
+        startBtn.addEventListener('click', startTest);
+        testArea.addEventListener('click', handleTestAreaClick);
+        
+        function startTest() {
+            testCount = 0;
+            reactionTimes = [];
+            testCountEl.textContent = `0/${totalTests}`;
+            avgReactionEl.textContent = '0 ms';
+            bestReactionEl.textContent = '0 ms';
+            resultsBody.innerHTML = '';
+            resultsTable.style.display = 'none';
+            
+            startBtn.style.display = 'none';
+            testArea.textContent = '准备开始';
+            testArea.style.backgroundColor = '#f0f0f0';
+            testArea.style.cursor = 'pointer';
+            
+            // 开始第一个测试
+            startSingleTest();
+        }
+        
+        function startSingleTest() {
+            if (testCount >= totalTests) {
+                endTest();
+                return;
+            }
+            
+            testCount++;
+            testCountEl.textContent = `${testCount}/${totalTests}`;
+            
+            // 重置测试区域
+            testArea.textContent = '准备...';
+            testArea.style.backgroundColor = '#f0f0f0';
+            isTesting = false;
+            
+            // 3秒后开始颜色变化
+            setTimeout(startColorChange, 2000);
+        }
+                            // 如果5秒内没有点击，自动跳过
+
+        function startColorChange() {
+            // 红色阶段 (3秒)
+            testArea.textContent = '3';
+            testArea.style.backgroundColor = '#FF5252';
+            
+            // 黄色阶段 (2秒)
+            setTimeout(() => {
+                testArea.textContent = '2';
+                testArea.style.backgroundColor = '#FFC107';
+                
+                // 绿色阶段 (1秒) - 可以点击
+                setTimeout(() => {
+                    testArea.textContent = '1';
+                    testArea.style.backgroundColor = '#4CAF50';
+                    setTimeout(() => {
+                        testArea.textContent = '👉请点击👈';
+                        testArea.style.backgroundColor = '#4CAF50';
+                        isTesting = true;
+                        startTime = Date.now();
+                        colorChangeTimeout = setTimeout(() => {
+                        if (isTesting) {
+                                testArea.textContent = '未点击';
+                                setTimeout(startSingleTest, 1000);
+                                isTesting = false;  
+                            }
+                        }, 5000);
+                    }, 1500);
+                }, 1000);
+            }, 1000);
+        }
+        
+        function handleTestAreaClick() {
+            if (!isTesting) return;
+            
+            const reactionTime = Date.now() - startTime;
+            reactionTimes.push(reactionTime);
+            isTesting = false;
+            clearTimeout(colorChangeTimeout);
+            
+            // 更新统计
+            updateStats();
+            
+            // 显示结果
+            testArea.textContent = `${reactionTime} ms`;
+            
+            // 1秒后开始下一个测试
+            setTimeout(startSingleTest, 1000);
+        }
+        
+        function updateStats() {
+            const avgTime = Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length);
+            const bestTime = Math.min(...reactionTimes);
+            
+            avgReactionEl.textContent = `${avgTime} ms`;
+            bestReactionEl.textContent = `${bestTime} ms`;
+            
+            // 更新结果表格
+            resultsBody.innerHTML = '';
+            reactionTimes.forEach((time, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${time} ms</td>
+                `;
+                resultsBody.appendChild(row);
+            });
+            
+            if (reactionTimes.length > 0) {
+                resultsTable.style.display = 'table';
+            }
+        }
+        
+        function endTest() {
+            testArea.textContent = '测试完成!';
+            testArea.style.backgroundColor = '#f0f0f0';
+            testArea.style.cursor = 'default';
+            startBtn.style.display = 'block';
+            updateStats();
+        }
     </script>
 </body>
 </html>
