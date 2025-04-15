@@ -467,6 +467,48 @@
                 font-size: 2.5rem;
             }
         }
+        .btn-animate {
+          position: relative;
+          width: 130px;
+          height: 40px;
+          line-height: 40px;
+          border: none;
+          border-radius: 5px;
+          background: #027efb;
+          color: #fff;
+          text-align: center;
+        }
+        
+        
+        .btn-animate__slide-in-right {
+        
+          &::after {
+            content: attr(data-text);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translate(30%, 0);
+            transition: all 0.3s;
+          }
+        
+          & > span {
+            transition: all 0.3s;
+          }
+        
+          &:hover {
+            &::after {
+              opacity: 1;
+              transform: translate(0, 0);
+            }
+        
+            & > span {
+              opacity: 0;
+            }
+          }
+        }
     </style>
 </head>
 <body>
@@ -501,8 +543,13 @@
         <section class="hero">
             <h1>网页版我的世界</h1>
             <p>利用WASMGC和JS编写的网页版我的世界</p>
+            
+            
             <div class="hero-buttons">
-                <button class="btn btn-primary pulse" onclick="window.open('https://www.mc.js.cool/mc/beta-1.12wasm/', '_blank')">我的世界1.12bate版</button>
+                <div class="btn-animate btn-animate__slide-in-right" data-text="处于bata版" onclick="window.open('https://www.mc.js.cool/mc/1.12/', '_blank')">
+                    <!-- <button class="btn btn-primary pulse" onclick="window.open('https://www.mc.js.cool/mc/beta-1.12wasm/', '_blank')">我的世界1.12</button> -->
+                    <span>a</span>
+                </div>
                 <button class="btn btn-outline" onclick="window.open('https://www.mc.js.cool/mc/1.8/', '_blank')">我的世界1.8.8</button>
                 <button class="btn btn-outline" onclick="window.open('https://www.mc.js.cool/mc/1.8touch/', '_blank')">手机触屏1.8.8版</button>
             </div>
