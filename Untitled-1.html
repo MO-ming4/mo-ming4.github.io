@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            @keyframes rotation {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+
+
+            .loader-11 {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                display: inline-block;
+                position: relative;
+                border: 3px solid;
+                border-color: #00afee #00afee transparent transparent;
+                -webkit-animation: rotation 1s linear infinite;
+                animation: rotation 1s linear infinite;
+            
+                &::after, &::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                    margin: auto;
+                    border: 3px solid;
+                    border-color: transparent transparent #90cf5b #90cf5b;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    -webkit-animation: rotationBack 0.5s linear infinite;
+                    animation: rotationBack 0.5s linear infinite;
+                    transform-origin: center center;
+                }
+            
+                &::before {
+                    width: 32px;
+                    height: 32px;
+                    border-color: #00afee #00afee transparent transparent;
+                    -webkit-animation: rotation 1.5s linear infinite;
+                    animation: rotation 1.5s linear infinite;
+                }
+            }
+            :root{
+                --red:rgba(255, 0, 0, 1);
+                --green:rgba(0, 255, 0, 1);
+                --blue:rgba(0, 0, 255, 1);
+                --yellow:rgba(255, 255, 0, 1);
+                --purple:rgba(255, 0, 255, 1);
+                --cyan:rgba(0, 255, 255, 1);
+                --white:rgba(255, 255, 255, 1);
+                --black:rgba(0, 0, 0, 1);
+            }
+            body{
+                background-image: url("img/4.png");
+                background-size: cover;
+                background-position: center;
+                color: #fff;
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                
+            }
+            .mbl{
+                overflow: hidden;
+                /* border-radius: 98% 16% 88% 12% / 0% 18% 0% 14%; */
+                /* text-align: center; */
+                z-index: 999;
+                resize: both;
+                position: absolute;
+                transition: .3s;
+                backdrop-filter: blur(10px) brightness(100%);
+                background-color: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                /* transform: translate(-900px, -300px); */
+                /* top: 50px; */
+                /* left: 50px; */
+                box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+                /* border: 3px solid #ffffff99; */
+                width: 500px;
+                height: 300px;
+                /* background-image: url("img/2.png");
+                background-size: cover;    
+                background-position: center; 
+                background-repeat: no-repeat;  */
+                opacity: blur(10px) brightness(100%);
+            }
+            .mbl:hover{
+                background-color: rgba(255, 255, 255, 0.25);
+                backdrop-filter: blur(15px) brightness(100%);
+                width: 510px;
+                height: 310px;
+                cursor: pointer;
+            }
+            .mbl:active{
+                background-color: rgba(255, 255, 255, 0.25);
+                backdrop-filter: blur(150px) brightness(100%);
+                width: 1000px;
+                height: 700px;
+                /* transform: translate(450px, 150px); */
+                /* top: 10px; */
+                /* animation: moveXYThenYZ 2s ease-in-out forwards; */
+            }
+            .mbl h1{
+                color:aqua;
+                text-align: center;
+                font-size: 50px;
+                font-family: '黑体';
+                text-shadow: -3px -3px 3px rgba(0, 0, 0, 0.5);
+                /* margin: 10px auto; */
+                /* font-weight: 100; */
+
+            }
+            .mbl a{
+                z-index: -10;
+                color: #ffffff;
+                text-indent: 2em;
+                text-decoration: none;
+                font-size: 20px;
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                text-shadow: -1px -1px 3px rgba(0, 0, 0, 0.5);
+            }
+            .but{
+                transition: .3s;
+                background-color: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+                border: 3px solid #ffffff99;
+                width: 100px;
+                z-index: 999;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="mbl">
+            <h1>
+                text box
+            </h1>
+            <a>aaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场daaaadadaasc按市场d</a>
+            <!-- <div class="loader-11"></div> -->
+        </div>
+    </body>
+</html>
