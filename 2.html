@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <style>
+        body{
+            /* background-color: rgb(122, 122, 122); */
+            background-image: url("https://api.vvhan.com/api/bing");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; 
+        }
+        :root {
+            --primary-color: #00a1d6;
+            --secondary-color: #fb7299;
+            --accent-color: #f25d8e;
+            --text-color: #ffffff;
+            --bg-color: #f4f5f7;
+            --card-bg: #47474700;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #00a1d6;
+            --secondary-color: #fb7299;
+            --accent-color: #f25d8e;
+            --text-color: #e5e9ef;
+            --bg-color: #18191c;
+            --card-bg: #25262b;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+        header {
+            position: relative;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: var(--card-bg);
+            /* box-shadow: var(--shadow); */
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+        }
+        .nav-links {
+            position: relative;
+            width: 100%;
+            margin-top: 0px;
+            height: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font: caption;
+        }
+        .nav-link {
+            backdrop-filter: blur(3px) brightness(100%);
+            /* background-color: rgba(255, 255, 255, 0.32); */
+            transition: .3s;
+            top: 20px;
+            border-right: 0px solid #3d657600;
+            height: 70px;
+            display: inline-block;
+            justify-content: center;
+            padding: 0 15px;
+            height: 60px;
+            border-radius: -8px;
+            padding-top: -100px;
+            display: flex;
+            /* align-items: center; */
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            /* position: relative; */
+            border-top: 0px solid #04a0e3;
+            width: 80px;
+            display: inline-block;
+            justify-content: center;
+            box-shadow: 0 0 10px #04a0e3,
+                            0 0 30px #04a0e3;
+            /* align-items: center; */
+        }
+        .nav-link:hover {
+            color: var(--primary-color);
+            width: 100px;
+            height: 80px;
+            display: inline-block;
+            transform: translateY(10px);
+            box-shadow: 0 0 10px #04a0e3,
+                            0 0 20px #04a0e3,
+                            0 0 40px #04a0e3,
+                            0 0 80px #04a0e3;
+        }
+        .nav-link:active{
+            color: var(--primary-color);
+            /* border-top: 8px solid #04a0e3; */
+            width: 120px;
+            height: 120px;
+            color: #ffffff;
+            display: inline-block;
+            transform: translateY(15px);
+            box-shadow: 0 0 10px #ffffff,
+                            0 0 20px #ffffff,
+                            0 0 40px #ffffff,
+                            0 0 80px #ffffff,
+                            0 0 1600px #ffffff;
+        }
+
+        .nav-link.active {
+            /* justify-content: center; */
+            color: var(--primary-color);
+            font-weight: 500px;
+        }
+
+        .nav-link.active::after {
+            /* justify-content: center; */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            right: 15px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        .navs-link {
+            backdrop-filter: blur(5px) brightness(100%);
+            /* background-color: rgba(255, 255, 255, 0.32); */
+            top: 20px;
+            border-right: 0px solid #3d657600;
+            height: 70px;
+            display: inline-block;
+            justify-content: center;
+            padding: 0 15px;
+            height: 60px;
+            border-radius: -8px;
+            padding-top: -100px;
+            display: flex;
+            /* align-items: center; */
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            /* position: relative; */
+            border-top: 0px solid #04a0e3;
+            width: 80px;
+            display: inline-block;
+            justify-content: center;
+            box-shadow: 0px 0px 16px 0px rgba(17, 17, 26, 0.1);
+            background-color: rgba(255, 255, 255, 0.01);
+            /* align-items: center; */
+            /* border-top: 0px solid #04a0e3;
+            width: 80px;
+            display: inline-block; */
+        }
+
+        .navs-link:hover {
+            color: var(--primary-color);
+            /* border-top: 8px solid #04a0e3; */
+            width: 100px;
+            height: 80px;
+            display: inline-block;
+            border-top: 8px solid #04a0e3;
+        }
+        .navs-link:active{
+            /* border-top: 8px solid #04a0e3;
+            width: 100px;
+            display: inline-block; */
+            /* font-color: #09ff00; */
+            border-top: 0px solid #04a0e3;
+            width: 80px;
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            color: #ffffff;
+            display: inline-block;
+            transform: translateY(15px);
+            /* box-shadow: 0 0 10px #ffffff,
+                            0 0 20px #ffffff,
+                            0 0 40px #ffffff,
+                            0 0 80px #ffffff,
+                            0 0 1600px #ffffff; */
+        }
+
+        .navs-link.active {
+            /* justify-content: center; */
+            color: var(--primary-color);
+            font-weight: 500px;
+        }
+
+        .navs-link.active::after {
+            /* justify-content: center; */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            right: 15px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-links">
+            <center>
+                <a href="#" class="nav-link">text1</a>
+                <a href="#" class="nav-link">text2</a>
+                <a href="#" class="nav-link">text3</a>
+                <a href="#" class="nav-link">text4</a>
+                <a href="#" class="nav-link">text5</a>
+            </center>
+        </div>
+    </header>
+    <header>
+        <div class="nav-links">
+            <center>
+                <a href="#" class="navs-link">text1</a>
+                <a href="#" class="navs-link">text2</a>
+                <a href="#" class="navs-link">text3</a>
+                <a href="#" class="navs-link">text4</a>
+                <a href="#" class="navs-link">text5</a>
+            </center>
+        </div>
+    </header>
+</body>
+</html>
