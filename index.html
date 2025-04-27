@@ -3,16 +3,16 @@
 <body>
   <h1>窝和窝的新网页私奔去乐（bushi）</h1>
   <div id="countdown">5秒后自动跳转到我的新网页...</div>
-  <a href="https://target-site.com">立即跳转</a>
+  <a href="https://momingwiki.com">立即跳转</a>
 
   <script>
   let seconds = 5;
   const timer = setInterval(() => {
     document.getElementById('countdown').textContent = 
-      `${seconds--}秒后自动跳转...`;
+      `${seconds--}秒后自动跳转到我的新网页...`;
     if(seconds < 0) {
       clearInterval(timer);
-      window.location.href = "momingwiki.com";
+      window.location.href = "https://momingwiki.com";
     }
   }, 1000);
   </script>
